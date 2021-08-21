@@ -37,6 +37,7 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     implementation("io.github.microutils:kotlin-logging:1.12.5")
     implementation("org.springframework.boot:spring-boot-starter-hateoas")
+    implementation("org.springframework.boot:spring-boot-starter-data-rest")
     implementation("org.springframework.boot:spring-boot-starter-data-ldap")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")

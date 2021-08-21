@@ -6,3 +6,6 @@ GET localhost:8080/shop/1
 
 ###
 DELETE localhost:8080/shop/1
+
+###
+GET localhost:8080/api
