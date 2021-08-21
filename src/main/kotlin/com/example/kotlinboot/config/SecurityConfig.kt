@@ -37,7 +37,8 @@ class SecurityConfig(
                 "/**/*.html",
                 "/**/*.css",
                 "/**/*.js",
-                "/h2-console/**"
+                "/h2-console/**",
+                "/**"
             )
             .access("permitAll")
             .and()
@@ -49,8 +50,10 @@ class SecurityConfig(
             .logoutSuccessUrl("/")
             .and()
             .csrf()
+            .ignoringAntMatchers("/shop/**")
             .and()
             .httpBasic()
+            .and()
     }
 
     override fun configure(auth: AuthenticationManagerBuilder?) {
