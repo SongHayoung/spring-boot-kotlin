@@ -1,18 +1,18 @@
 package com.example.kotlinboot.controller
 
+import com.example.kotlinboot.assembler.ShopRepresentationModel
+import com.example.kotlinboot.assembler.ShopRepresentationModelAssembler
 import com.example.kotlinboot.model.Shop
 import com.example.kotlinboot.repository.ShopRepository
 import mu.KLogging
 import org.springframework.hateoas.*
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder
-import org.springframework.hateoas.server.mvc.linkTo
-import org.springframework.hateoas.server.mvc.withRel
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-class ShopController(private val shopRepository: ShopRepository) {
+class ShopController(private val shopRepository: ShopRepository, private val shopRepresentationModelAssembler: ShopRepresentationModelAssembler) {
     companion object : KLogging()
 
     /**
@@ -21,21 +21,16 @@ class ShopController(private val shopRepository: ShopRepository) {
      * Resource -> EntityModel
      */
     @GetMapping("/shops")
-    fun getShops(): CollectionModel<EntityModel<Shop>> {
-        val shops = shopRepository.findAll().map {
-            EntityModel.of(it,
-                linkTo<ShopController> { getShop(it.id!!) } withRel  IanaLinkRelations.SELF,
-                linkTo<ShopController> { deleteShop(it.id!!) } withRel LinkRelation.of("delete")
-            )}
+    fun getShops(): CollectionModel<ShopRepresentationModel> {
+        val shops = shopRepository.findAll()
 
-        return CollectionModel.of(shops, WebMvcLinkBuilder.linkTo(ShopController::class.java).slash("shop").slash("save").withRel("post"))
+        return shopRepresentationModelAssembler.toCollectionModel(shops)
+            .add(WebMvcLinkBuilder.linkTo(ShopController::class.java).slash("shop").slash("save").withRel("post"))
     }
 
     @GetMapping("/shop/{id}")
-    fun getShop(@PathVariable id: Long): EntityModel<Shop> {
-        return EntityModel.of(shopRepository.findById(id).orElseThrow{IllegalArgumentException("There is no item with ${id}")},
-            linkTo<ShopController> { deleteShop(id) } withRel LinkRelation.of("delete")
-        )
+    fun getShop(@PathVariable id: Long): ShopRepresentationModel {
+        return shopRepresentationModelAssembler.toModel(shopRepository.findById(id).orElseThrow{IllegalArgumentException("There is no item with ${id}")})
     }
 
     @PostMapping("/shop/save")
