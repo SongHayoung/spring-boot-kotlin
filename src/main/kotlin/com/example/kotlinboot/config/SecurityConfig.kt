@@ -50,7 +50,7 @@ class SecurityConfig(
             .logoutSuccessUrl("/")
             .and()
             .csrf()
-            .ignoringAntMatchers("/shop/**")
+            .ignoringAntMatchers("/shop/**", "/integration/**")
             .and()
             .httpBasic()
             .and()

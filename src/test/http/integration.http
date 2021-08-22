@@ -1,0 +1,8 @@
+###
+GET localhost:8080/integration/1
+
+###
+GET localhost:8080/integration/2
+
+###
+GET localhost:8080/integration/abc
