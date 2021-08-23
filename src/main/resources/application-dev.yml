@@ -1,0 +1,5 @@
+yaml:
+  profile: dev
+  values:
+    - devValue1
+    - devValue2

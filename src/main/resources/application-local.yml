@@ -1,0 +1,5 @@
+yaml:
+  profile: local
+  values:
+    - localValue1
+    - localValue2
