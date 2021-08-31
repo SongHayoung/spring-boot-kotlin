@@ -34,6 +34,8 @@ dependencies {
     implementation("org.springframework.ldap:spring-ldap-core")
     implementation("org.springframework.security:spring-security-ldap")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("it.ozimov:embedded-redis:0.7.1")
     runtimeOnly("com.h2database:h2")
     implementation("io.github.microutils:kotlin-logging:1.12.5")
     implementation("org.springframework.boot:spring-boot-starter-hateoas")
