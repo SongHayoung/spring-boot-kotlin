@@ -4,6 +4,7 @@ import com.example.kotlinboot.model.ComplexFoo
 import com.example.kotlinboot.model.IntFoo
 import com.example.kotlinboot.model.Shop
 import com.example.kotlinboot.model.StringFoo
+import com.example.kotlinboot.redis.foo.*
 import com.example.kotlinboot.repository.ComplexFooRepository
 import com.example.kotlinboot.repository.IntFooRepository
 import com.example.kotlinboot.repository.ShopRepository
@@ -11,18 +12,57 @@ import com.example.kotlinboot.repository.StringFooRepository
 import mu.KLogging
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 import javax.transaction.Transactional
 
 @Component
 class DataPusher(private val shopRepository: ShopRepository,
                  private val intFooRepository: IntFooRepository,
                  private val stringFooRepository: StringFooRepository,
-                 private val complexFooRepository: ComplexFooRepository
+                 private val complexFooRepository: ComplexFooRepository,
+                 private val fooRedisRepository: FooRedisRepository,
+                 private val intFooRedisRepository: IntFooRedisRepository,
+                 private val stringFooRedisRepository: StringFooRedisRepository,
+                 private val dateFooRedisRepository: DateFooRedisRepository
 ): CommandLineRunner {
     companion object : KLogging()
 
     @Transactional
     override fun run(vararg args: String?) {
+        rdbRun()
+        redisRun()
+    }
+
+    fun redisRun() {
+        val foo = Foo(name = "foo", ttl = 60)
+        logger.info("Redis foo $foo")
+
+        val saveFoo = fooRedisRepository.save(foo)
+        logger.info("Redis save foo $saveFoo")
+
+        val findFoo = fooRedisRepository.findById(saveFoo.Id!!)
+        logger.info("Redis find foo $findFoo")
+
+        val nameFoo = fooRedisRepository.findByName(foo.name)
+        logger.info("Redis name foo $nameFoo")
+
+        val foo2 = Foo(name = "foo2", ttl = 6000)
+        fooRedisRepository.save(foo2)
+
+        val intFoo = IntFoo(name = "intFoo", value = 1, ttl = 6000)
+        intFooRedisRepository.save(intFoo)
+
+        val stringFoo = StringFoo(name = "stringFoo", value = "string", ttl = 6000)
+        stringFooRedisRepository.save(stringFoo)
+
+        val dateFoo = DateFoo(name = "dateFoo", start = LocalDateTime.now().minusDays(10), end = LocalDateTime.now().plusDays(10), ttl = 6000)
+        dateFooRedisRepository.save(dateFoo)
+
+        val findDateFoo = dateFooRedisRepository.findAllByEndLessThanEqualAndStartGreaterThanEqual(LocalDateTime.now(), LocalDateTime.now())
+        logger.info("Redis date foo $findDateFoo")
+    }
+
+    fun rdbRun() {
         val shops = listOf(
             Shop(productName = "item1", price = 1000),
             Shop(productName = "item2", price = 2000),
@@ -57,11 +97,6 @@ class DataPusher(private val shopRepository: ShopRepository,
         println(complexFoo.values)
         println(findComplexFoo.values)
         println(findComplexFoo2.values)
-
-
-
-
-
     }
 }
 
