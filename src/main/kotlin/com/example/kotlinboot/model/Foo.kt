@@ -15,18 +15,24 @@ class Foo(@Id
 }
 
 @Entity
-class IntFoo(id: Long? = null, name: String, val value: Int): Foo(id, name) {
+data class FooSub(override var id: Long? = null,
+                  override val name: String,
+                  @ManyToOne(fetch = FetchType.LAZY)
+                  var parent: ComplexFoo? = null): Foo(id, name)
+
+@Entity
+class IntFoo(id: Long? = null, name: String, val value: Int): FooSub(id, name) {
     override fun toString(): String {
         return "IntFoo $id $name $value"
     }
 }
 
 @Entity
-class StringFoo(id: Long? = null, name: String, val value: String): Foo(id, name) {
+class StringFoo(id: Long? = null, name: String, val value: String): FooSub(id, name) {
     override fun toString(): String {
         return "StringFoo $id $name $value"
     }
 }
 
 @Entity
-class ComplexFoo(id: Long? = null,name: String, @OneToMany(fetch = FetchType.LAZY) val values: List<Foo>): Foo(id, name)
+class ComplexFoo(id: Long? = null,name: String, @OneToMany(fetch = FetchType.LAZY) val values: List<FooSub>): Foo(id, name)
