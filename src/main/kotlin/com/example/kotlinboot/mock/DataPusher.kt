@@ -1,5 +1,7 @@
 package com.example.kotlinboot.mock
 
+import com.example.kotlinboot.mapstruct.Person
+import com.example.kotlinboot.mapstruct.PersonMapper
 import com.example.kotlinboot.model.ComplexFoo
 import com.example.kotlinboot.model.IntFoo
 import com.example.kotlinboot.model.Shop
@@ -10,8 +12,10 @@ import com.example.kotlinboot.repository.IntFooRepository
 import com.example.kotlinboot.repository.ShopRepository
 import com.example.kotlinboot.repository.StringFooRepository
 import mu.KLogging
+import org.mapstruct.factory.Mappers
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.transaction.Transactional
 
@@ -23,14 +27,26 @@ class DataPusher(private val shopRepository: ShopRepository,
                  private val fooRedisRepository: FooRedisRepository,
                  private val intFooRedisRepository: IntFooRedisRepository,
                  private val stringFooRedisRepository: StringFooRedisRepository,
-                 private val dateFooRedisRepository: DateFooRedisRepository
+                 private val dateFooRedisRepository: DateFooRedisRepository,
+                 private val personMapper: PersonMapper
 ): CommandLineRunner {
     companion object : KLogging()
 
     @Transactional
     override fun run(vararg args: String?) {
-        rdbRun()
-        redisRun()
+        //rdbRun()
+        //redisRun()
+        mapStructRun()
+    }
+
+    fun mapStructRun() {
+        val person = Person("Samuel", "Jackson", "0123 334466", LocalDate.of(1948, 12, 21))
+
+        val personDto = personMapper.convertToDto(person)
+        println(personDto)
+
+        val personModel = personMapper.convertToModel(personDto)
+        println(personModel)
     }
 
     fun redisRun() {
@@ -58,8 +74,8 @@ class DataPusher(private val shopRepository: ShopRepository,
         val dateFoo = DateFoo(name = "dateFoo", start = LocalDateTime.now().minusDays(10), end = LocalDateTime.now().plusDays(10), ttl = 6000)
         dateFooRedisRepository.save(dateFoo)
 
-        val findDateFoo = dateFooRedisRepository.findAllByEndLessThanEqualAndStartGreaterThanEqual(LocalDateTime.now(), LocalDateTime.now())
-        logger.info("Redis date foo $findDateFoo")
+        //val findDateFoo = dateFooRedisRepository.findAllByEndLessThanEqualAndStartGreaterThanEqual(LocalDateTime.now(), LocalDateTime.now())
+        //logger.info("Redis date foo $findDateFoo")
     }
 
     fun rdbRun() {
