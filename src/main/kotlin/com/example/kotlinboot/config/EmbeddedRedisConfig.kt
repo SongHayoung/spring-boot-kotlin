@@ -6,7 +6,7 @@ import redis.embedded.RedisServer
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 
-//@Configuration
+@Configuration
 class EmbeddedRedisConfig(redisProperties: RedisProperties) {
     private var redisServer: RedisServer = RedisServer(redisProperties.port)
 
